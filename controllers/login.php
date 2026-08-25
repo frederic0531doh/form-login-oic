@@ -19,7 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['password'])) {
         // L'utilisateur est authentifié avec succès
         $_SESSION['user_id'] = $user['id_user'];
-        $_SESSION['full_name'] = $user['full_name'];
+
+        if ((int) $user['must_change_password'] === 1) {
+            // Mot de passe temporaire encore en place : on force son changement avant tout accès.
+            header('Location: ../change_password.php');
+            exit();
+        }
+
         header('Location: ../dashboard.php'); // Rediriger vers la page du tableau de bord
         exit();
     } else {

@@ -1,23 +1,26 @@
 <?php
 session_start();
 
+// Erreurs de connexion : gérées via la session (une session est déjà nécessaire pour authentifier l'utilisateur).
 $loginError = $_SESSION['login_error'] ?? null;
-$registerError = $_SESSION['register_error'] ?? null;
-$registerSuccess = $_SESSION['register_success'] ?? null;
-$activePanel = $_SESSION['active_panel'] ?? null;
 $oldLoginEmail = $_SESSION['old_login_email'] ?? '';
-$oldRegisterName = $_SESSION['old_register_name'] ?? '';
-$oldRegisterEmail = $_SESSION['old_register_email'] ?? '';
 
-unset(
-    $_SESSION['login_error'],
-    $_SESSION['register_error'],
-    $_SESSION['register_success'],
-    $_SESSION['active_panel'],
-    $_SESSION['old_login_email'],
-    $_SESSION['old_register_name'],
-    $_SESSION['old_register_email']
-);
+unset($_SESSION['login_error'], $_SESSION['old_login_email']);
+
+// Erreurs/succès d'inscription : transmis via l'URL, car l'inscription ne démarre pas de session.
+$registerErrorMessages = [
+    'fields' => "Veuillez remplir tous les champs.",
+    'invalid_email' => "Adresse e-mail invalide.",
+    'exists' => "Cet utilisateur existe déjà.",
+];
+$registerError = $registerErrorMessages[$_GET['reg_error'] ?? ''] ?? null;
+$registerSuccess = isset($_GET['reg_success'])
+    ? "Inscription réussie ! Un mot de passe temporaire vous a été envoyé par e-mail."
+    : null;
+$activePanel = $_GET['panel'] ?? null;
+$oldCompanyName = $_GET['old_company_name'] ?? '';
+$oldUsername = $_GET['old_username'] ?? '';
+$oldRegisterEmail = $_GET['old_email'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -39,12 +42,9 @@ unset(
                 <?php if ($registerError): ?>
                     <div class="alert alert-error"><?= htmlspecialchars($registerError) ?></div>
                 <?php endif; ?>
-                <?php if ($registerSuccess): ?>
-                    <div class="alert alert-success"><?= htmlspecialchars($registerSuccess) ?></div>
-                <?php endif; ?>
-                <input type="text" name="full_name" placeholder="Nom complet" value="<?= htmlspecialchars($oldRegisterName) ?>" required />
+                <input type="text" name="company_name" placeholder="Raison sociale" value="<?= htmlspecialchars($oldCompanyName) ?>" required />
+                <input type="text" name="username" placeholder="Nom d'utilisateur" value="<?= htmlspecialchars($oldUsername) ?>" required />
                 <input type="email" name="email" placeholder="Adresse mail" value="<?= htmlspecialchars($oldRegisterEmail) ?>" required />
-                <input type="password" name="password" placeholder="Mot de passe" required />
                 <button>Inscription</button>
             </form>
         </div>
@@ -53,6 +53,9 @@ unset(
                 <h1>Se connecter</h1>
                 <?php if ($loginError): ?>
                     <div class="alert alert-error"><?= htmlspecialchars($loginError) ?></div>
+                <?php endif; ?>
+                <?php if ($registerSuccess): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($registerSuccess) ?></div>
                 <?php endif; ?>
                 <input type="email" name="email" placeholder="Adresse mail" value="<?= htmlspecialchars($oldLoginEmail) ?>" required />
                 <input type="password" name="password" placeholder="Mot de passe" required />

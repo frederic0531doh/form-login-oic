@@ -17,6 +17,11 @@ if (!$user) {
     header('Location: index.php');
     exit();
 }
+
+if ((int) $user['must_change_password'] === 1) {
+    header('Location: change_password.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -41,17 +46,24 @@ if (!$user) {
 
         <main>
             <div class="welcome-card">
-                <div class="avatar"><?= htmlspecialchars(strtoupper(substr($user['full_name'], 0, 1))) ?></div>
-                <h1>Bienvenue, <?= htmlspecialchars($user['full_name']) ?> !</h1>
+                <div class="avatar"><?= htmlspecialchars(strtoupper(substr($user['username'], 0, 1))) ?></div>
+                <h1>Bienvenue, <?= htmlspecialchars($user['username']) ?> !</h1>
                 <p>Heureux de vous revoir sur votre espace personnel OIC.</p>
             </div>
 
             <div class="info-grid">
                 <div class="info-card">
+                    <i class="fa-solid fa-building"></i>
+                    <div>
+                        <span class="label">Raison sociale</span>
+                        <span class="value"><?= htmlspecialchars($user['company_name']) ?></span>
+                    </div>
+                </div>
+                <div class="info-card">
                     <i class="fa-solid fa-id-badge"></i>
                     <div>
-                        <span class="label">Nom complet</span>
-                        <span class="value"><?= htmlspecialchars($user['full_name']) ?></span>
+                        <span class="label">Nom d'utilisateur</span>
+                        <span class="value"><?= htmlspecialchars($user['username']) ?></span>
                     </div>
                 </div>
                 <div class="info-card">

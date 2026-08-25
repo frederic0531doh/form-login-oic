@@ -29,17 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `users` (
   `id_user` int(11) NOT NULL,
-  `full_name` varchar(150) NOT NULL,
-  `email` varchar(150) DEFAULT NULL,
-  `password` varchar(250) DEFAULT NULL
+  `company_name` varchar(150) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(250) DEFAULT NULL,
+  `must_change_password` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id_user`, `full_name`, `email`, `password`) VALUES
-(1, 'test', 'test@mail.com', '$2y$10$PRMHvNwAYqRpDLlj2msf0.BTsJzG8WVIEaQ.2/6NjWnGMp5O/U1zW');
+INSERT INTO `users` (`id_user`, `company_name`, `username`, `email`, `password`, `must_change_password`) VALUES
+(1, 'test', 'test', 'test@mail.com', '$2y$10$PRMHvNwAYqRpDLlj2msf0.BTsJzG8WVIEaQ.2/6NjWnGMp5O/U1zW', 0);
 
 --
 -- Index pour les tables déchargées
@@ -49,7 +51,8 @@ INSERT INTO `users` (`id_user`, `full_name`, `email`, `password`) VALUES
 -- Index pour la table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id_user`);
+  ADD PRIMARY KEY (`id_user`),
+  ADD UNIQUE KEY `email_unique` (`email`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
