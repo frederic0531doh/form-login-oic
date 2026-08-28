@@ -24,6 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['document'])) {
     exit();
 }
 
+$documentName = trim($_POST['document_name'] ?? '');
+
+if ($documentName === '') {
+    redirect_with_error('Veuillez indiquer un nom pour le document.');
+}
+
+// Retire les caractères de contrôle (retours à la ligne, etc.) pour éviter
+// toute injection dans les en-têtes HTTP lors du téléchargement du fichier.
+$documentName = preg_replace('/[\x00-\x1F\x7F]/', '', $documentName);
+
 $file = $_FILES['document'];
 
 if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -55,7 +65,10 @@ if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)
     redirect_with_error("Impossible de créer le répertoire de l'entreprise.");
 }
 
-$originalName = basename($file['name']);
+$originalName = $documentName;
+if (strtolower(substr($originalName, -strlen($extension) - 1)) !== '.' . $extension) {
+    $originalName .= '.' . $extension;
+}
 $storedName = uniqid('doc_', true) . '.' . $extension;
 $destination = $uploadDir . $storedName;
 

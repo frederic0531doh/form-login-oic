@@ -86,6 +86,10 @@ require __DIR__ . '/includes/layout_top.php';
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
+                                            <label for="document_name" class="form-label">Nom du document</label>
+                                            <input type="text" class="form-control" id="document_name" name="document_name" maxlength="150" placeholder="Ex : Statuts de l'entreprise" required />
+                                        </div>
+                                        <div class="mb-3">
                                             <label for="document" class="form-label">Fichier</label>
                                             <input type="file" class="form-control" id="document" name="document" required />
                                             <div class="form-text">
