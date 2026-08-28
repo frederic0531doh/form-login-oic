@@ -2,3 +2,49 @@
 .app-sidebar {
     background-color: #065495;
 }
+
+/*
+ * Remplace le bleu Bootstrap par défaut (#0d6efd) par le bleu institutionnel
+ * de l'OIC partout où il apparaît : variables globales (liens, focus...)
+ * ainsi que les boutons/badges "primary", dont AdminLTE fige la couleur en
+ * dur sur chaque classe plutôt que de la dériver des variables globales.
+ */
+:root {
+    --bs-blue: #065495;
+    --bs-primary: #065495;
+    --bs-primary-rgb: 6, 84, 149;
+    --bs-primary-text-emphasis: color-mix(in srgb, #065495 70%, black);
+    --bs-primary-bg-subtle: color-mix(in srgb, #065495 15%, white);
+    --bs-primary-border-subtle: color-mix(in srgb, #065495 35%, white);
+
+    --bs-link-color: #065495;
+    --bs-link-color-rgb: 6, 84, 149;
+    --bs-link-hover-color: color-mix(in srgb, #065495 85%, black);
+    --bs-link-hover-color-rgb: 6, 84, 149;
+
+    --bs-focus-ring-color: rgba(6, 84, 149, 0.25);
+}
+
+.btn-primary {
+    --bs-btn-bg: #065495;
+    --bs-btn-border-color: #065495;
+    --bs-btn-hover-bg: color-mix(in srgb, #065495 85%, black);
+    --bs-btn-hover-border-color: color-mix(in srgb, #065495 80%, black);
+    --bs-btn-active-bg: color-mix(in srgb, #065495 75%, black);
+    --bs-btn-active-border-color: color-mix(in srgb, #065495 70%, black);
+    --bs-btn-disabled-bg: #065495;
+    --bs-btn-disabled-border-color: #065495;
+    --bs-btn-focus-shadow-rgb: 6, 84, 149;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #065495;
+    --bs-btn-border-color: #065495;
+    --bs-btn-hover-bg: #065495;
+    --bs-btn-hover-border-color: #065495;
+    --bs-btn-active-bg: #065495;
+    --bs-btn-active-border-color: #065495;
+    --bs-btn-disabled-color: #065495;
+    --bs-btn-disabled-border-color: #065495;
+    --bs-btn-focus-shadow-rgb: 6, 84, 149;
+}
