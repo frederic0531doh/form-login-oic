@@ -16,9 +16,29 @@ function redirect_with_error(string $message): void
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['document'])) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../documents.php');
     exit();
+}
+
+$id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+if (!$id) {
+    redirect_with_error('Document invalide.');
+}
+
+$db = new Database();
+$document = $db->query(
+    "SELECT * FROM documents WHERE id_document = ? AND id_user = ?",
+    [$id, $_SESSION['user_id']]
+)->fetch(PDO::FETCH_ASSOC);
+
+if (!$document) {
+    redirect_with_error('Document introuvable.');
+}
+
+if (!isset($_FILES['document'])) {
+    redirect_with_error('Veuillez sélectionner un fichier.');
 }
 
 $documentName = trim($_POST['document_name'] ?? '');
@@ -34,19 +54,10 @@ if ($error !== null) {
     redirect_with_error($error);
 }
 
-$db = new Database();
-$user = $db->query("SELECT * FROM users WHERE id_user = ?", [$_SESSION['user_id']])->fetch(PDO::FETCH_ASSOC);
-
-if (!$user) {
-    header('Location: ../index.php');
-    exit();
-}
-
-$companySlug = sanitize_directory_name($user['company_name']);
-$uploadDir = '../uploads/' . $companySlug . '/';
+$uploadDir = '../uploads/' . $document['company_slug'] . '/';
 
 if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
-    redirect_with_error("Impossible de créer le répertoire de l'entreprise.");
+    redirect_with_error("Impossible d'accéder au répertoire de l'entreprise.");
 }
 
 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -58,11 +69,16 @@ if (!move_uploaded_file($file['tmp_name'], $destination)) {
     redirect_with_error("Impossible d'enregistrer le fichier.");
 }
 
+$oldPath = $uploadDir . $document['stored_name'];
+if (is_file($oldPath)) {
+    unlink($oldPath);
+}
+
 $db->query(
-    "INSERT INTO documents (id_user, company_slug, original_name, stored_name, file_size) VALUES (?, ?, ?, ?, ?)",
-    [$user['id_user'], $companySlug, $originalName, $storedName, $file['size']]
+    "UPDATE documents SET original_name = ?, stored_name = ?, file_size = ?, uploaded_at = CURRENT_TIMESTAMP WHERE id_document = ?",
+    [$originalName, $storedName, $file['size'], $id]
 );
 
-$_SESSION['upload_success'] = 'Le document a été envoyé avec succès.';
+$_SESSION['upload_success'] = 'Le document a été remplacé avec succès.';
 header('Location: ../documents.php');
 exit();
