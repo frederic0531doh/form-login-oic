@@ -1,89 +1,60 @@
 <?php
-session_start();
+require __DIR__ . '/includes/auth.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
-    exit();
-}
-
-require 'Database.php';
-
-$db = new Database();
-$user = $db->query("SELECT * FROM users WHERE id_user = ?", [$_SESSION['user_id']])->fetch(PDO::FETCH_ASSOC);
-
-if (!$user) {
-    session_unset();
-    session_destroy();
-    header('Location: index.php');
-    exit();
-}
-
-if ((int) $user['must_change_password'] === 1) {
-    header('Location: change_password.php');
-    exit();
-}
+$pageTitle = 'Tableau de bord';
+$activePage = 'dashboard';
+require __DIR__ . '/includes/layout_top.php';
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
-    <title>Tableau de bord | OIC</title>
-    <link rel="shortcut icon" href="assets/img/logo-oic.jpg" type="image/x-icon">
-</head>
 
-<body>
-
-    <div class="dashboard-container">
-        <header class="dashboard-header">
-            <img src="assets/img/logo-oic.jpg" height="80px" alt="Logo OIC">
-            <a href="controllers/logout.php" class="logout-btn">
-                <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
-            </a>
-        </header>
-
-        <main>
-            <div class="welcome-card">
-                <div class="avatar"><?= htmlspecialchars(strtoupper(substr($user['username'], 0, 1))) ?></div>
-                <h1>Bienvenue, <?= htmlspecialchars($user['username']) ?> !</h1>
-                <p>Heureux de vous revoir sur votre espace personnel OIC.</p>
-            </div>
-
-            <div class="info-grid">
-                <div class="info-card">
-                    <i class="fa-solid fa-building"></i>
-                    <div>
-                        <span class="label">Raison sociale</span>
-                        <span class="value"><?= htmlspecialchars($user['company_name']) ?></span>
+                    <div class="card mb-4">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <span class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center fw-bold flex-shrink-0" style="width: 64px; height: 64px; font-size: 1.75rem;">
+                                <?= htmlspecialchars($userInitial) ?>
+                            </span>
+                            <div>
+                                <h2 class="h4 mb-1">Bienvenue, <?= htmlspecialchars($user['username']) ?> !</h2>
+                                <p class="mb-0 text-secondary">Heureux de vous revoir sur votre espace personnel OIC.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="info-card">
-                    <i class="fa-solid fa-id-badge"></i>
-                    <div>
-                        <span class="label">Nom d'utilisateur</span>
-                        <span class="value"><?= htmlspecialchars($user['username']) ?></span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <i class="fa-solid fa-envelope"></i>
-                    <div>
-                        <span class="label">Adresse mail</span>
-                        <span class="value"><?= htmlspecialchars($user['email']) ?></span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <i class="fa-solid fa-hashtag"></i>
-                    <div>
-                        <span class="label">Identifiant</span>
-                        <span class="value">#<?= htmlspecialchars($user['id_user']) ?></span>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
 
-</body>
+                    <div class="row">
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-building"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Raison sociale</span>
+                                    <span class="info-box-number"><?= htmlspecialchars($user['company_name']) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon text-bg-success shadow-sm"><i class="bi bi-person-badge"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Nom d'utilisateur</span>
+                                    <span class="info-box-number"><?= htmlspecialchars($user['username']) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon text-bg-warning shadow-sm"><i class="bi bi-envelope"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Adresse mail</span>
+                                    <span class="info-box-number"><?= htmlspecialchars($user['email']) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon text-bg-danger shadow-sm"><i class="bi bi-hash"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Identifiant</span>
+                                    <span class="info-box-number">#<?= htmlspecialchars($user['id_user']) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-</html>
+<?php require __DIR__ . '/includes/layout_bottom.php'; ?>
