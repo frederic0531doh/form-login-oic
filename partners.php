@@ -61,6 +61,15 @@ require __DIR__ . '/includes/layout_top.php';
                                     <div class="d-flex gap-2 justify-content-end flex-wrap">
                                         <button
                                             type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#addDocumentModal"
+                                            data-partner-id="<?= (int) $partner['id_partner'] ?>"
+                                            data-partner-company="<?= htmlspecialchars($partner['company_name']) ?>">
+                                            <i class="bi bi-file-earmark-plus me-1"></i> Ajouter un document
+                                        </button>
+                                        <button
+                                            type="button"
                                             class="btn btn-sm btn-outline-secondary"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editPartnerModal"
@@ -158,6 +167,44 @@ require __DIR__ . '/includes/layout_top.php';
 </div>
 <!--end::Edit Partner Modal-->
 
+<!--begin::Add Document Modal-->
+<div class="modal fade" id="addDocumentModal" tabindex="-1" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="controllers/upload_document.php" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDocumentModalLabel">Ajouter un document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id_partner" id="add_document_partner_id" value="" />
+                    <p class="mb-3">
+                        Partenaire : <strong id="add_document_partner_name"></strong>
+                    </p>
+                    <div class="mb-3">
+                        <label for="add_document_name" class="form-label">Nom du document</label>
+                        <input type="text" class="form-control" id="add_document_name" name="document_name" maxlength="150" placeholder="Ex : Statuts de l'entreprise" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_document_file" class="form-label">Fichier</label>
+                        <input type="file" class="form-control" id="add_document_file" name="document" required />
+                        <div class="form-text">
+                            Formats acceptés : PDF, Word, Excel, PowerPoint, images, texte, archive ZIP. Taille maximale : 10 Mo.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload me-1"></i> Envoyer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--end::Add Document Modal-->
+
 <script>
     (() => {
         'use strict';
@@ -173,6 +220,19 @@ require __DIR__ . '/includes/layout_top.php';
             companyInput.value = trigger.dataset.partnerCompany || '';
             contactInput.value = trigger.dataset.partnerContact || '';
             emailInput.value = trigger.dataset.partnerEmail || '';
+        });
+    })();
+
+    (() => {
+        'use strict';
+        const modal = document.getElementById('addDocumentModal');
+        const idInput = document.getElementById('add_document_partner_id');
+        const nameLabel = document.getElementById('add_document_partner_name');
+
+        modal.addEventListener('show.bs.modal', (event) => {
+            const trigger = event.relatedTarget;
+            idInput.value = trigger.dataset.partnerId;
+            nameLabel.textContent = trigger.dataset.partnerCompany || '';
         });
     })();
 </script>
