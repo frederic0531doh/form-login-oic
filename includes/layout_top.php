@@ -150,6 +150,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="partners.php" class="nav-link<?= $activePage === 'partners' ? ' active' : '' ?>">
+                                <i class="nav-icon bi bi-people"></i>
+                                <p>Partenaires</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="documents.php" class="nav-link<?= $activePage === 'documents' ? ' active' : '' ?>">
                                 <i class="nav-icon bi bi-folder"></i>
                                 <p>Documents</p>

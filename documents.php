@@ -14,6 +14,11 @@ $documents = $db->query(
     [$_SESSION['user_id']]
 )->fetchAll(PDO::FETCH_ASSOC);
 
+$partners = $db->query(
+    "SELECT * FROM partners WHERE id_user = ? ORDER BY company_name ASC",
+    [$_SESSION['user_id']]
+)->fetchAll(PDO::FETCH_ASSOC);
+
 require __DIR__ . '/includes/layout_top.php';
 ?>
 
@@ -42,6 +47,7 @@ require __DIR__ . '/includes/layout_top.php';
                     <thead>
                         <tr>
                             <th>Document</th>
+                            <th>Partenaire</th>
                             <th>Taille</th>
                             <th>Déposé le</th>
                             <th class="text-end">Action</th>
@@ -54,6 +60,7 @@ require __DIR__ . '/includes/layout_top.php';
                                     <i class="bi bi-file-earmark-text me-2 text-secondary"></i>
                                     <?= htmlspecialchars($document['original_name']) ?>
                                 </td>
+                                <td><?= htmlspecialchars($document['company_slug']) ?></td>
                                 <td><?= htmlspecialchars(format_file_size((int) $document['file_size'])) ?></td>
                                 <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($document['uploaded_at']))) ?></td>
                                 <td class="text-end">
@@ -97,31 +104,61 @@ require __DIR__ . '/includes/layout_top.php';
 <div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="uploadDocumentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" action="controllers/upload_document.php" enctype="multipart/form-data">
+            <?php if (empty($partners)): ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="uploadDocumentModalLabel">Ajouter un document</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="document_name" class="form-label">Nom du document</label>
-                        <input type="text" class="form-control" id="document_name" name="document_name" maxlength="150" placeholder="Ex : Statuts de l'entreprise" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="document" class="form-label">Fichier</label>
-                        <input type="file" class="form-control" id="document" name="document" required />
-                        <div class="form-text">
-                            Formats acceptés : PDF, Word, Excel, PowerPoint, images, texte, archive ZIP. Taille maximale : 10 Mo.
-                        </div>
-                    </div>
+                    <p class="mb-0">
+                        Vous devez d'abord enregistrer au moins un partenaire avant de pouvoir déposer un document.
+                    </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-upload me-1"></i> Envoyer
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <a href="partners.php" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-1"></i> Ajouter un partenaire
+                    </a>
                 </div>
-            </form>
+            <?php else: ?>
+                <form method="post" action="controllers/upload_document.php" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadDocumentModalLabel">Ajouter un document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="id_partner" class="form-label">Partenaire (raison sociale)</label>
+                            <select class="form-select" id="id_partner" name="id_partner" required>
+                                <option value="" selected disabled>Choisir un partenaire...</option>
+                                <?php foreach ($partners as $partner): ?>
+                                    <option value="<?= (int) $partner['id_partner'] ?>"><?= htmlspecialchars($partner['company_name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">
+                                Le document sera rangé dans le dossier de la raison sociale sélectionnée.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="document_name" class="form-label">Nom du document</label>
+                            <input type="text" class="form-control" id="document_name" name="document_name" maxlength="150" placeholder="Ex : Statuts de l'entreprise" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="document" class="form-label">Fichier</label>
+                            <input type="file" class="form-control" id="document" name="document" required />
+                            <div class="form-text">
+                                Formats acceptés : PDF, Word, Excel, PowerPoint, images, texte, archive ZIP. Taille maximale : 10 Mo.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i> Envoyer
+                        </button>
+                    </div>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 </div>

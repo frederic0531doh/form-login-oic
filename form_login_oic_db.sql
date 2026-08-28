@@ -67,12 +67,47 @@ ALTER TABLE `users`
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `partners`
+--
+
+CREATE TABLE `partners` (
+  `id_partner` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `company_name` varchar(150) NOT NULL,
+  `contact` varchar(150) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Index pour la table `partners`
+--
+ALTER TABLE `partners`
+  ADD PRIMARY KEY (`id_partner`),
+  ADD KEY `id_user` (`id_user`);
+
+--
+-- AUTO_INCREMENT pour la table `partners`
+--
+ALTER TABLE `partners`
+  MODIFY `id_partner` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Contraintes pour la table `partners`
+--
+ALTER TABLE `partners`
+  ADD CONSTRAINT `partners_id_user_fk` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `documents`
 --
 
 CREATE TABLE `documents` (
   `id_document` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
+  `id_partner` int(11) DEFAULT NULL,
   `company_slug` varchar(150) NOT NULL,
   `original_name` varchar(255) NOT NULL,
   `stored_name` varchar(255) NOT NULL,
@@ -85,7 +120,8 @@ CREATE TABLE `documents` (
 --
 ALTER TABLE `documents`
   ADD PRIMARY KEY (`id_document`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `id_user` (`id_user`),
+  ADD KEY `id_partner` (`id_partner`);
 
 --
 -- AUTO_INCREMENT pour la table `documents`
@@ -97,7 +133,8 @@ ALTER TABLE `documents`
 -- Contraintes pour la table `documents`
 --
 ALTER TABLE `documents`
-  ADD CONSTRAINT `documents_id_user_fk` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`) ON DELETE CASCADE;
+  ADD CONSTRAINT `documents_id_user_fk` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`) ON DELETE CASCADE,
+  ADD CONSTRAINT `documents_id_partner_fk` FOREIGN KEY (`id_partner`) REFERENCES `partners` (`id_partner`) ON DELETE SET NULL;
 
 COMMIT;
 

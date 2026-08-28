@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['document'])) {
     exit();
 }
 
+$idPartner = filter_input(INPUT_POST, 'id_partner', FILTER_VALIDATE_INT);
+
+if (!$idPartner) {
+    redirect_with_error('Veuillez choisir un partenaire.');
+}
+
 $documentName = trim($_POST['document_name'] ?? '');
 
 if ($documentName === '') {
@@ -35,18 +41,20 @@ if ($error !== null) {
 }
 
 $db = new Database();
-$user = $db->query("SELECT * FROM users WHERE id_user = ?", [$_SESSION['user_id']])->fetch(PDO::FETCH_ASSOC);
+$partner = $db->query(
+    "SELECT * FROM partners WHERE id_partner = ? AND id_user = ?",
+    [$idPartner, $_SESSION['user_id']]
+)->fetch(PDO::FETCH_ASSOC);
 
-if (!$user) {
-    header('Location: ../index.php');
-    exit();
+if (!$partner) {
+    redirect_with_error('Partenaire introuvable.');
 }
 
-$companySlug = sanitize_directory_name($user['company_name']);
+$companySlug = sanitize_directory_name($partner['company_name']);
 $uploadDir = '../uploads/' . $companySlug . '/';
 
 if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
-    redirect_with_error("Impossible de créer le répertoire de l'entreprise.");
+    redirect_with_error("Impossible de créer le répertoire du partenaire.");
 }
 
 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -59,8 +67,8 @@ if (!move_uploaded_file($file['tmp_name'], $destination)) {
 }
 
 $db->query(
-    "INSERT INTO documents (id_user, company_slug, original_name, stored_name, file_size) VALUES (?, ?, ?, ?, ?)",
-    [$user['id_user'], $companySlug, $originalName, $storedName, $file['size']]
+    "INSERT INTO documents (id_user, id_partner, company_slug, original_name, stored_name, file_size) VALUES (?, ?, ?, ?, ?, ?)",
+    [$_SESSION['user_id'], $partner['id_partner'], $companySlug, $originalName, $storedName, $file['size']]
 );
 
 $_SESSION['upload_success'] = 'Le document a été envoyé avec succès.';
