@@ -27,7 +27,8 @@ $oldRegisterEmail = $_GET['old_email'] ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Font Awesome hébergée en local (assets/vendor), plus de dépendance à un CDN -->
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <title>Page de connexion | OIC</title>
     <link rel="shortcut icon" href="assets/img/logo-oic.jpg" type="image/x-icon">

@@ -35,17 +35,16 @@
       })();
     </script>
 
+    <!-- Source Sans 3 et overlayscrollbars hébergés en local (assets/vendor), plus de dépendance à un CDN -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-      crossorigin="anonymous"
+      href="assets/vendor/source-sans-3/index.css"
       media="print"
       onload="this.media = 'all'"
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
-      crossorigin="anonymous"
+      href="assets/vendor/overlayscrollbars/overlayscrollbars.min.css"
     />
     <!-- Bootstrap Icons hébergées en local (assets/vendor), plus de dépendance à un CDN -->
     <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css" />
